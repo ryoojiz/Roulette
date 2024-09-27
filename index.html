@@ -89,7 +89,7 @@
 
     function shuffleNames() {
         return new Promise((resolve) => {
-            let shuffleCount = 20;
+            let shuffleCount = 30;
             const shuffleInterval = setInterval(() => {
                 const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
                 roulette.textContent = randomName;

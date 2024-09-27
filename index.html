@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette Picker</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        #roulette {
+            margin: 20px 0;
+            font-size: 2rem;
+            padding: 20px;
+            border: 2px solid #252525;
+            width: 300px;
+            text-align: center;
+            background-color: #1e1d1d;
+            border-radius: 8px;
+        }
+        #start-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #e0e0e0;
+            background-color: #1e1d1d;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        #start-btn:hover {
+            background-color: #555;
+        }
+        #picked-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            width: 80%;
+            max-width: 500px;
+        }
+        #picked-list li {
+            background-color: #333;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="roulette">Click "Start" to Pick a Name</div>
+<button id="start-btn">Start</button>
+<ul id="picked-list"></ul>
+<audio id="select-sound" src="https://www.soundjay.com/button/button-3.mp3" preload="auto"></audio>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+    const names = [
+        "Bu Meila", "Bu Diani", "Bu Diah", "Bu Bella", "Bu Mia", "Bu Maria", "Bu Febri", 
+        "Bu Fifi", "Bu Amal", "Bu Innez", "Bu Shinta", "Pak Dwi", "Pak Agum", "Pak Agus", 
+        "Sri", "Bu Megia"
+    ];
+    let availableNames = [...names];
+    const pickedNames = [];
+
+    const roulette = document.getElementById('roulette');
+    const startBtn = document.getElementById('start-btn');
+    const pickedList = document.getElementById('picked-list');
+    const selectSound = document.getElementById('select-sound');
+
+    function shuffleNames() {
+        return new Promise((resolve) => {
+            let shuffleCount = 20;
+            const shuffleInterval = setInterval(() => {
+                const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
+                roulette.textContent = randomName;
+                shuffleCount--;
+
+                if (shuffleCount <= 0) {
+                    clearInterval(shuffleInterval);
+                    resolve();
+                }
+            }, 100);
+        });
+    }
+
+    function pickName() {
+        if (availableNames.length === 0) {
+            roulette.textContent = "All names picked!";
+            return;
+        }
+
+        shuffleNames().then(() => {
+            const pickedIndex = Math.floor(Math.random() * availableNames.length);
+            const pickedName = availableNames.splice(pickedIndex, 1)[0];
+            pickedNames.push(pickedName);
+            roulette.textContent = pickedName;
+            selectSound.play();
+            addToPickedList(pickedName);
+            confetti();
+        });
+    }
+
+    function addToPickedList(name) {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${pickedNames.length}. ${name}`;
+        pickedList.appendChild(listItem);
+    }
+
+    function confetti() {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }
+
+    startBtn.addEventListener('click', pickName);
+</script>
+
+</body>
+</html>
